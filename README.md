@@ -37,6 +37,10 @@ Chrome / Edge Manifest V3 扩展基础工程，用于在知乎回答的点赞列
 - 扩展只申请 `https://www.zhihu.com/*` 的站点权限。
 - 建议保留较高操作间隔，避免误点或触发站点风控。
 
+## 支持项目
+
+如果这个扩展帮你节省了时间，欢迎通过微信赞赏支持维护。详见 [docs/SPONSOR.zh-CN.md](docs/SPONSOR.zh-CN.md)。
+
 ## 上架材料
 
 - 隐私政策草稿：`docs/PRIVACY_POLICY.zh-CN.md`
