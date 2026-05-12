@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>知乎一键拉黑</title>
+    <link rel="stylesheet" href="./popup.css" />
+  </head>
+  <body>
+    <main class="app">
+      <header class="header">
+        <div>
+          <h1>知乎一键拉黑</h1>
+          <p id="pageStatus">等待检测页面</p>
+        </div>
+        <span id="stateBadge" class="badge">空闲</span>
+      </header>
+
+      <section class="panel">
+        <label class="field">
+          <span>处理上限</span>
+          <input id="maxUsers" type="number" min="1" max="1000" step="1" value="50" />
+        </label>
+
+        <div class="grid">
+          <label class="field">
+            <span>最小间隔 ms</span>
+            <input id="minDelay" type="number" min="500" max="60000" step="100" value="1600" />
+          </label>
+          <label class="field">
+            <span>最大间隔 ms</span>
+            <input id="maxDelay" type="number" min="500" max="60000" step="100" value="3200" />
+          </label>
+        </div>
+
+        <label class="check">
+          <input id="dryRun" type="checkbox" />
+          <span>试运行，只识别用户不点击拉黑</span>
+        </label>
+      </section>
+
+      <section class="panel stats">
+        <div>
+          <span>发现</span>
+          <strong id="foundCount">0</strong>
+        </div>
+        <div>
+          <span>已处理</span>
+          <strong id="processedCount">0</strong>
+        </div>
+        <div>
+          <span>失败</span>
+          <strong id="failedCount">0</strong>
+        </div>
+      </section>
+
+      <section class="actions">
+        <button id="openListBtn" type="button" class="secondary">打开点赞列表</button>
+        <button id="startBtn" type="button" class="primary">开始</button>
+        <button id="pauseBtn" type="button" class="secondary">暂停</button>
+        <button id="stopBtn" type="button" class="danger">停止</button>
+      </section>
+
+      <section class="panel logPanel">
+        <div class="logHeader">
+          <span>日志</span>
+          <button id="copyLogBtn" type="button" class="textButton">复制</button>
+        </div>
+        <ol id="logList" class="logs"></ol>
+      </section>
+    </main>
+
+    <script src="./popup.js"></script>
+  </body>
+</html>

@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "Zhihu Block Likers",
+  "version": "0.1.0",
+  "description": "Batch block users from the liker list of a Zhihu answer.",
+  "permissions": ["activeTab", "storage", "scripting"],
+  "host_permissions": ["https://www.zhihu.com/*"],
+  "action": {
+    "default_title": "知乎一键拉黑",
+    "default_popup": "src/popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.zhihu.com/*"],
+      "js": ["src/content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
