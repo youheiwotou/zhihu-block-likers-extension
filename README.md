@@ -2,6 +2,12 @@
 
 Chrome / Edge Manifest V3 扩展基础工程，用于在知乎回答的点赞列表中批量执行拉黑操作。
 
+## 普通用户安装
+
+从 [Releases](https://github.com/youheiwotou/zhihu-block-likers-extension/releases) 下载 `zhihu-block-likers-extension-user-版本号.zip`，解压后双击 `install.bat`。脚本会复制扩展文件、打开 Chrome/Edge 扩展页，并把扩展目录复制到剪贴板。
+
+详细步骤见 [INSTALL.zh-CN.md](INSTALL.zh-CN.md)。
+
 ## 安装
 
 1. 打开 `chrome://extensions/` 或 `edge://extensions/`。
@@ -14,9 +20,12 @@ Chrome / Edge Manifest V3 扩展基础工程，用于在知乎回答的点赞列
 .\scripts\generate-icons.ps1
 .\scripts\validate.ps1
 .\scripts\build-package.ps1
+.\scripts\build-user-release.ps1
 ```
 
 打包产物会生成到 `dist/zhihu-block-likers-extension-0.1.0.zip`。`dist/` 不提交到仓库。
+
+普通用户安装包会生成到 `dist/zhihu-block-likers-extension-user-0.1.0.zip`。
 
 ## 使用
 
