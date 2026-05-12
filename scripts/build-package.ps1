@@ -17,7 +17,7 @@ try {
   }
   New-Item -ItemType Directory -Force -Path $packageDir | Out-Null
 
-  foreach ($item in @("manifest.json", "src", "_locales")) {
+  foreach ($item in @("manifest.json", "src", "_locales", "LICENSE")) {
     Copy-Item -LiteralPath (Join-Path $root $item) -Destination $packageDir -Recurse
   }
   New-Item -ItemType Directory -Force -Path (Join-Path $packageDir "assets") | Out-Null

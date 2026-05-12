@@ -19,7 +19,7 @@ try {
   }
   New-Item -ItemType Directory -Force -Path $releaseDir | Out-Null
 
-  foreach ($item in @("manifest.json", "src", "_locales", "install.bat", "INSTALL.zh-CN.md", "README.md")) {
+  foreach ($item in @("manifest.json", "src", "_locales", "install.bat", "INSTALL.zh-CN.md", "README.md", "LICENSE")) {
     Copy-Item -LiteralPath (Join-Path $root $item) -Destination $releaseDir -Recurse
   }
 

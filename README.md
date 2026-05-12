@@ -217,6 +217,12 @@ dist/zhihu-block-likers-extension-user-版本号.zip
 
 如果这个扩展帮你节省了时间，欢迎通过微信赞赏支持维护。详见 [docs/SPONSOR.zh-CN.md](docs/SPONSOR.zh-CN.md)。
 
+## 开源协议
+
+本项目使用 [GNU General Public License v3.0](LICENSE) 开源。
+
+你可以自由使用、复制、修改和分发本项目；如果分发修改版或衍生版本，需要按 GPL-3.0 的要求继续提供相同许可证下的源代码。
+
 ## 免责声明
 
 本项目用于个人内容管理辅助。请遵守知乎服务条款和相关法律法规，合理设置处理上限和操作间隔。使用本扩展产生的账号风险和操作后果由使用者自行承担。
