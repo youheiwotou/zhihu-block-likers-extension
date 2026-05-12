@@ -65,12 +65,13 @@ https://www.zhihu.com/question/.../answer/...
 
 3. 点击浏览器工具栏里的“知乎点赞用户屏蔽助手”。
 4. 点击“打开点赞列表”，或手动打开回答的赞同者列表。
-5. 首次使用保持“试运行，只识别用户不点击拉黑”勾选。
-6. 将处理上限设置成较小数字，例如 `5`。
-7. 点击“开始”，查看日志里识别的用户是否来自目标回答。
-8. 确认无误后，取消“试运行”。
-9. 勾选“我确认当前列表属于目标回答，允许执行屏蔽”。
-10. 再次点击“开始”执行实际屏蔽。
+5. 点击“检测列表”，查看日志里是否能找到赞同者列表和用户行。
+6. 首次使用保持“试运行，只识别用户不点击拉黑”勾选。
+7. 将处理上限设置成较小数字，例如 `5`。
+8. 点击“开始”，查看日志里识别的用户是否来自目标回答。
+9. 确认无误后，取消“试运行”。
+10. 勾选“我确认当前列表属于目标回答，允许执行屏蔽”。
+11. 再次点击“开始”执行实际屏蔽。
 
 建议第一次真实执行时把处理上限设为 `1`，确认流程没问题后再提高。
 
@@ -78,6 +79,7 @@ https://www.zhihu.com/question/.../answer/...
 
 - 识别知乎回答赞同者列表
 - 默认试运行，只识别不操作
+- 只读检测当前列表和首个用户行菜单
 - 实际屏蔽前必须用户确认
 - 可配置处理上限
 - 可配置最小和最大操作间隔
@@ -179,6 +181,7 @@ docs/
 ```powershell
 .\scripts\generate-icons.ps1
 .\scripts\validate.ps1
+.\scripts\test-fixture.ps1
 .\scripts\build-package.ps1
 .\scripts\build-user-release.ps1
 ```
@@ -187,14 +190,15 @@ docs/
 
 - `generate-icons.ps1`：生成扩展 PNG 图标
 - `validate.ps1`：检查 manifest、JS 语法、PowerShell 语法和图标文件
+- `test-fixture.ps1`：用本地浏览器打开离线夹具，验证识别逻辑不会把“关注”当成菜单按钮
 - `build-package.ps1`：生成商店上传用 zip
 - `build-user-release.ps1`：生成普通用户安装包 zip
 
 产物：
 
 ```text
-dist/zhihu-block-likers-extension-0.1.0.zip
-dist/zhihu-block-likers-extension-user-0.1.0.zip
+dist/zhihu-block-likers-extension-版本号.zip
+dist/zhihu-block-likers-extension-user-版本号.zip
 ```
 
 `dist/` 不提交到仓库。

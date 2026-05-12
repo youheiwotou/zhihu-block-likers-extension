@@ -17,6 +17,7 @@ const els = {
   processedCount: document.querySelector("#processedCount"),
   failedCount: document.querySelector("#failedCount"),
   openListBtn: document.querySelector("#openListBtn"),
+  diagnoseBtn: document.querySelector("#diagnoseBtn"),
   startBtn: document.querySelector("#startBtn"),
   pauseBtn: document.querySelector("#pauseBtn"),
   stopBtn: document.querySelector("#stopBtn"),
@@ -41,6 +42,7 @@ function bindEvents() {
   }
 
   els.openListBtn.addEventListener("click", () => sendCommand("openLikerList"));
+  els.diagnoseBtn.addEventListener("click", () => sendCommand("diagnose"));
   els.startBtn.addEventListener("click", handleStart);
   els.pauseBtn.addEventListener("click", () => {
     const command = lastStatus?.state === "paused" ? "resume" : "pause";
@@ -199,6 +201,7 @@ function renderStatus(status) {
   els.pauseBtn.textContent = status.state === "paused" ? "继续" : "暂停";
 
   els.openListBtn.disabled = status.state === "running";
+  els.diagnoseBtn.disabled = status.state === "running";
   els.startBtn.disabled = status.state === "running";
   els.pauseBtn.disabled = !["running", "paused"].includes(status.state);
   els.stopBtn.disabled = !["running", "paused"].includes(status.state);
@@ -229,7 +232,7 @@ function renderLogs(logs) {
 }
 
 function setControlsEnabled(enabled) {
-  for (const button of [els.openListBtn, els.startBtn, els.pauseBtn, els.stopBtn, els.copyLogBtn]) {
+  for (const button of [els.openListBtn, els.diagnoseBtn, els.startBtn, els.pauseBtn, els.stopBtn, els.copyLogBtn]) {
     button.disabled = !enabled;
   }
 }

@@ -8,6 +8,9 @@ const BLOCKER_TEXT = /^(屏蔽|拉黑|加入黑名单|不看\s*TA|不看他|不�
 const CONFIRM_TEXT = /^(确定|确认|屏蔽|拉黑|加入黑名单)$/;
 const LIKER_TEXT = /(人赞同|赞同者|赞同了该回答|查看全部.*赞同|查看.*赞同)/;
 const PROFILE_LINK_RE = /\/people\/([^/?#]+)/;
+const ACTION_MENU_TEXT = /^(更多|更多操作|操作|菜单|设置|···|…|\.\.\.)$/i;
+const ACTION_MENU_HINT = /(更多|操作|菜单|设置|more|menu|option)/i;
+const NON_MENU_TEXT = /^(关注|已关注|取消关注|取关|赞同|反对|评论|分享|收藏|邀请回答)(\s|$)/;
 
 const runner = {
   state: "idle",
@@ -39,6 +42,9 @@ async function handleMessage(message) {
       return status();
     case "openLikerList":
       await openLikerList();
+      return status();
+    case "diagnose":
+      diagnosePage();
       return status();
     case "start":
       start(message.payload);
@@ -92,8 +98,8 @@ function start(settings) {
 }
 
 function normalizeSettings(settings = {}) {
-  const minDelay = clamp(settings.minDelay, 500, 60000, 1600);
-  const maxDelay = clamp(settings.maxDelay, minDelay, 60000, 3200);
+  const minDelay = clamp(settings.minDelay, 1000, 60000, 2500);
+  const maxDelay = clamp(settings.maxDelay, minDelay, 60000, 5500);
   return {
     maxUsers: clamp(settings.maxUsers, 1, 500, 20),
     minDelay,
@@ -168,7 +174,8 @@ async function runBlockJob() {
       return;
     }
 
-    await delay(randomBetween(runner.settings.minDelay, runner.settings.maxDelay));
+    const nextDelay = runner.settings.dryRun ? 150 : randomBetween(runner.settings.minDelay, runner.settings.maxDelay);
+    await delay(nextDelay);
   }
 }
 
@@ -298,7 +305,7 @@ function closestUserRow(link, scope) {
 }
 
 async function blockUser(user) {
-  safeClick(user.row);
+  scrollIntoView(user.row);
   await delay(200);
 
   const directButton = findDirectBlockButton(user.row);
@@ -307,9 +314,11 @@ async function blockUser(user) {
     const confirmButton = await waitFor(() => findConfirmButton(), 2500);
     if (confirmButton) {
       safeClick(confirmButton);
+      await delay(500);
+      return true;
     }
-    await delay(500);
-    return true;
+    log(`未检测到 ${user.name} 的屏蔽确认按钮，已停止该用户操作`);
+    return false;
   }
 
   const menuOpened = await openUserActionMenu(user.row);
@@ -329,18 +338,15 @@ async function blockUser(user) {
   if (confirmButton) {
     safeClick(confirmButton);
     await delay(500);
+    return true;
   }
 
-  return true;
+  log(`未检测到 ${user.name} 的屏蔽确认按钮，已停止该用户操作`);
+  return false;
 }
 
 async function openUserActionMenu(row) {
-  const menuButtons = Array.from(row.querySelectorAll("button, [role='button']"))
-    .filter(isVisible)
-    .filter((button) => {
-      const label = `${button.getAttribute("aria-label") || ""} ${button.title || ""} ${textOf(button)}`.trim();
-      return /更多|操作|设置|菜单|···|\.\.\.|…/.test(label) || textOf(button).length <= 2;
-    });
+  const menuButtons = findActionMenuButtons(row);
 
   for (const button of menuButtons.reverse()) {
     safeClick(button);
@@ -348,9 +354,35 @@ async function openUserActionMenu(row) {
     if (item) {
       return true;
     }
+    closeFloatingLayers();
   }
 
   return false;
+}
+
+function findActionMenuButtons(row) {
+  return Array.from(row.querySelectorAll("button, [role='button']"))
+    .filter(isVisible)
+    .filter((button) => !button.disabled && button.getAttribute("aria-disabled") !== "true")
+    .filter((button) => {
+      const label = controlLabel(button);
+      if (NON_MENU_TEXT.test(label)) {
+        return false;
+      }
+      if (ACTION_MENU_TEXT.test(label) || ACTION_MENU_HINT.test(label)) {
+        return true;
+      }
+      if (button.getAttribute("aria-haspopup") === "menu" || button.getAttribute("aria-expanded") !== null) {
+        return true;
+      }
+
+      const className = String(button.className || "");
+      if (ACTION_MENU_HINT.test(className)) {
+        return true;
+      }
+
+      return Boolean(button.querySelector("[class*='More'], [class*='more'], [class*='Menu'], [class*='menu']"));
+    });
 }
 
 function findDirectBlockButton(row) {
@@ -428,11 +460,15 @@ function closeFloatingLayers() {
 }
 
 function safeClick(el) {
-  el.scrollIntoView({ block: "center", inline: "center" });
+  scrollIntoView(el);
   el.dispatchEvent(new MouseEvent("mouseover", { bubbles: true, cancelable: true, view: window }));
   el.dispatchEvent(new MouseEvent("mousedown", { bubbles: true, cancelable: true, view: window }));
   el.dispatchEvent(new MouseEvent("mouseup", { bubbles: true, cancelable: true, view: window }));
   el.click();
+}
+
+function scrollIntoView(el) {
+  el.scrollIntoView({ block: "center", inline: "center" });
 }
 
 async function waitIfPaused() {
@@ -477,6 +513,10 @@ function cleanUserName(value) {
   return value.replace(/\s+/g, " ").trim() || "未知用户";
 }
 
+function controlLabel(el) {
+  return `${el?.getAttribute("aria-label") || ""} ${el?.title || ""} ${textOf(el)}`.replace(/\s+/g, " ").trim();
+}
+
 function textOf(el) {
   return (el?.innerText || el?.textContent || "").replace(/\s+/g, " ").trim();
 }
@@ -512,6 +552,35 @@ function status() {
     pageMessage: runner.pageMessage,
     logs: runner.logs.slice(-80)
   };
+}
+
+function diagnosePage() {
+  const modal = findLikerModal();
+  const trigger = findLikerTrigger();
+  const profileLinks = modal ? findProfileLinks(modal) : [];
+  const rows = modal ? findUserRows(modal) : [];
+
+  log(`检测：${trigger ? "已找到点赞入口" : "未找到点赞入口"}；${modal ? "已找到列表" : "未找到列表"}`);
+  if (!modal) {
+    log("检测建议：请先打开目标回答的赞同者列表，再重新检测。");
+    return;
+  }
+
+  log(`检测：列表内可见主页链接 ${profileLinks.length} 个，用户行 ${rows.length} 个`);
+
+  const sampleUsers = rows.slice(0, 5).map((row) => {
+    const link = findProfileLinks(row)[0];
+    return link ? cleanUserName(link.textContent || link.getAttribute("aria-label") || userTokenFromLink(link)) : "未知用户";
+  });
+  if (sampleUsers.length > 0) {
+    log(`样例：${sampleUsers.join("、")}`);
+  }
+
+  const firstRow = rows[0];
+  if (firstRow) {
+    const actionLabels = findActionMenuButtons(firstRow).map(controlLabel).filter(Boolean);
+    log(`检测：首个用户行菜单按钮 ${actionLabels.length} 个${actionLabels.length ? `（${actionLabels.join("、")}）` : ""}`);
+  }
 }
 
 function log(message) {

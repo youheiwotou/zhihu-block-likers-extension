@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <title>Content Script Fixture</title>
+    <style>
+      body {
+        font: 14px/1.5 Arial, sans-serif;
+        margin: 24px;
+      }
+
+      [role="dialog"] {
+        display: block;
+        width: 420px;
+        max-height: 360px;
+        overflow-y: auto;
+        border: 1px solid #ddd;
+        padding: 16px;
+      }
+
+      .List-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 48px;
+        border-bottom: 1px solid #eee;
+      }
+    </style>
+  </head>
+  <body>
+    <button class="Button">2 人赞同</button>
+
+    <section role="dialog" aria-label="赞同者">
+      <h2>赞同者</h2>
+      <div class="List-item">
+        <a href="https://www.zhihu.com/people/alice">Alice</a>
+        <div>
+          <button class="Button FollowButton">关注</button>
+          <button class="Button ContentItem-more" aria-label="更多操作">更多</button>
+        </div>
+      </div>
+      <div class="List-item">
+        <a href="https://www.zhihu.com/people/bob">Bob</a>
+        <div>
+          <button class="Button FollowButton">关注</button>
+          <button class="Button ContentItem-more" aria-label="更多操作">更多</button>
+        </div>
+      </div>
+    </section>
+
+    <pre id="result">pending</pre>
+
+    <script>
+      window.chrome = {
+        runtime: {
+          onMessage: {
+            addListener(listener) {
+              window.__contentListener = listener;
+            }
+          }
+        }
+      };
+    </script>
+    <script src="../../src/content.js"></script>
+    <script>
+      function sendContentMessage(message) {
+        return new Promise((resolve) => {
+          window.__contentListener(message, {}, resolve);
+        });
+      }
+
+      sendContentMessage({ type: "diagnose" }).then((status) => {
+        document.querySelector("#result").textContent = JSON.stringify(status, null, 2);
+      });
+    </script>
+  </body>
+</html>

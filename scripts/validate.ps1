@@ -14,6 +14,7 @@ try {
     "scripts\build-user-release.ps1",
     "scripts\generate-icons.ps1",
     "scripts\install-local.ps1",
+    "scripts\test-fixture.ps1",
     "scripts\validate.ps1"
   )) {
     $tokens = $null

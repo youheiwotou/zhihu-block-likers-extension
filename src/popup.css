@@ -155,6 +155,10 @@ p {
   margin-bottom: 10px;
 }
 
+.actions .danger {
+  grid-column: span 2;
+}
+
 button {
   min-height: 34px;
   border: 1px solid transparent;
