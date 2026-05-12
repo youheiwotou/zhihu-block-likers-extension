@@ -70,6 +70,12 @@ function start(settings) {
   }
 
   runner.settings = normalizeSettings(settings);
+  if (!runner.settings.dryRun && !runner.settings.confirmed) {
+    runner.state = "error";
+    log("实际屏蔽需要先在扩展弹窗中确认目标列表。");
+    return;
+  }
+
   runner.seenUsers = new Map();
   runner.logs = [];
   runner.processed = 0;
@@ -89,10 +95,11 @@ function normalizeSettings(settings = {}) {
   const minDelay = clamp(settings.minDelay, 500, 60000, 1600);
   const maxDelay = clamp(settings.maxDelay, minDelay, 60000, 3200);
   return {
-    maxUsers: clamp(settings.maxUsers, 1, 1000, 50),
+    maxUsers: clamp(settings.maxUsers, 1, 500, 20),
     minDelay,
     maxDelay,
-    dryRun: Boolean(settings.dryRun)
+    dryRun: Boolean(settings.dryRun),
+    confirmed: Boolean(settings.confirmed)
   };
 }
 

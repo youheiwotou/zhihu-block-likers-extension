@@ -1,13 +1,26 @@
 {
   "manifest_version": 3,
-  "name": "Zhihu Block Likers",
+  "name": "__MSG_extensionName__",
   "version": "0.1.0",
-  "description": "Batch block users from the liker list of a Zhihu answer.",
+  "description": "__MSG_extensionDescription__",
+  "default_locale": "zh_CN",
+  "icons": {
+    "16": "assets/icons/icon16.png",
+    "32": "assets/icons/icon32.png",
+    "48": "assets/icons/icon48.png",
+    "128": "assets/icons/icon128.png"
+  },
   "permissions": ["activeTab", "storage", "scripting"],
   "host_permissions": ["https://www.zhihu.com/*"],
   "action": {
     "default_title": "知乎一键拉黑",
-    "default_popup": "src/popup.html"
+    "default_popup": "src/popup.html",
+    "default_icon": {
+      "16": "assets/icons/icon16.png",
+      "32": "assets/icons/icon32.png",
+      "48": "assets/icons/icon48.png",
+      "128": "assets/icons/icon128.png"
+    }
   },
   "content_scripts": [
     {

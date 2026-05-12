@@ -19,23 +19,28 @@
       <section class="panel">
         <label class="field">
           <span>处理上限</span>
-          <input id="maxUsers" type="number" min="1" max="1000" step="1" value="50" />
+          <input id="maxUsers" type="number" min="1" max="500" step="1" value="20" />
         </label>
 
         <div class="grid">
           <label class="field">
             <span>最小间隔 ms</span>
-            <input id="minDelay" type="number" min="500" max="60000" step="100" value="1600" />
+            <input id="minDelay" type="number" min="1000" max="60000" step="100" value="2500" />
           </label>
           <label class="field">
             <span>最大间隔 ms</span>
-            <input id="maxDelay" type="number" min="500" max="60000" step="100" value="3200" />
+            <input id="maxDelay" type="number" min="1000" max="60000" step="100" value="5500" />
           </label>
         </div>
 
         <label class="check">
           <input id="dryRun" type="checkbox" />
           <span>试运行，只识别用户不点击拉黑</span>
+        </label>
+
+        <label class="check">
+          <input id="confirmBlock" type="checkbox" />
+          <span>我确认当前列表属于目标回答，允许执行屏蔽</span>
         </label>
       </section>
 
@@ -68,6 +73,8 @@
         </div>
         <ol id="logList" class="logs"></ol>
       </section>
+
+      <p class="privacyNote">本扩展仅在当前知乎页面本地执行，不上传名单或日志。</p>
     </main>
 
     <script src="./popup.js"></script>

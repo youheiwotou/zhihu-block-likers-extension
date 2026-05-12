@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="Zhihu liker block helper icon">
+  <rect x="8" y="8" width="112" height="112" rx="24" fill="#1677ff"/>
+  <path d="M35 38h54v12L57 81h33v13H36V82l32-31H35V38z" fill="#fff"/>
+  <circle cx="88" cy="88" r="25" fill="#f04438"/>
+  <circle cx="88" cy="88" r="14" fill="none" stroke="#fff" stroke-width="8"/>
+  <path d="M74 102l28-28" stroke="#fff" stroke-width="8" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,8 @@
+{
+  "extensionName": {
+    "message": "知乎点赞用户屏蔽助手"
+  },
+  "extensionDescription": {
+    "message": "在用户确认后，从知乎回答赞同者列表中按限速逐个执行屏蔽操作。"
+  }
+}

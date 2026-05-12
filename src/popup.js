@@ -1,8 +1,8 @@
 const DEFAULT_SETTINGS = {
-  maxUsers: 50,
-  minDelay: 1600,
-  maxDelay: 3200,
-  dryRun: false
+  maxUsers: 20,
+  minDelay: 2500,
+  maxDelay: 5500,
+  dryRun: true
 };
 
 const els = {
@@ -12,6 +12,7 @@ const els = {
   minDelay: document.querySelector("#minDelay"),
   maxDelay: document.querySelector("#maxDelay"),
   dryRun: document.querySelector("#dryRun"),
+  confirmBlock: document.querySelector("#confirmBlock"),
   foundCount: document.querySelector("#foundCount"),
   processedCount: document.querySelector("#processedCount"),
   failedCount: document.querySelector("#failedCount"),
@@ -40,7 +41,7 @@ function bindEvents() {
   }
 
   els.openListBtn.addEventListener("click", () => sendCommand("openLikerList"));
-  els.startBtn.addEventListener("click", () => sendCommand("start", readSettings()));
+  els.startBtn.addEventListener("click", handleStart);
   els.pauseBtn.addEventListener("click", () => {
     const command = lastStatus?.state === "paused" ? "resume" : "pause";
     sendCommand(command);
@@ -62,8 +63,8 @@ async function persistSettings() {
 }
 
 function readSettings() {
-  const maxUsers = clampNumber(els.maxUsers.value, 1, 1000, DEFAULT_SETTINGS.maxUsers);
-  const minDelay = clampNumber(els.minDelay.value, 500, 60000, DEFAULT_SETTINGS.minDelay);
+  const maxUsers = clampNumber(els.maxUsers.value, 1, 500, DEFAULT_SETTINGS.maxUsers);
+  const minDelay = clampNumber(els.minDelay.value, 1000, 60000, DEFAULT_SETTINGS.minDelay);
   const maxDelay = clampNumber(els.maxDelay.value, minDelay, 60000, Math.max(minDelay, DEFAULT_SETTINGS.maxDelay));
 
   els.maxUsers.value = maxUsers;
@@ -76,6 +77,19 @@ function readSettings() {
     maxDelay,
     dryRun: els.dryRun.checked
   };
+}
+
+async function handleStart() {
+  const settings = readSettings();
+  if (!settings.dryRun && !els.confirmBlock.checked) {
+    renderLogs(["请先确认当前列表属于目标回答，再执行实际屏蔽。"]);
+    return;
+  }
+
+  await sendCommand("start", {
+    ...settings,
+    confirmed: els.confirmBlock.checked
+  });
 }
 
 function clampNumber(value, min, max, fallback) {

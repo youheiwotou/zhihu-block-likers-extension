@@ -1,0 +1,8 @@
+{
+  "extensionName": {
+    "message": "Zhihu Liker Block Helper"
+  },
+  "extensionDescription": {
+    "message": "Blocks users from a Zhihu answer liker list after explicit user confirmation and rate limiting."
+  }
+}
