@@ -1,8 +1,8 @@
 {
   "extensionName": {
-    "message": "知乎点赞用户屏蔽助手"
+    "message": "知乎黑名单同步"
   },
   "extensionDescription": {
-    "message": "在用户确认后，从知乎回答赞同者列表中按限速逐个执行屏蔽操作。"
+    "message": "同步 GitHub 知乎黑名单，导出自己的黑名单，并在确认后按列表批量屏蔽。"
   }
 }

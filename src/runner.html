@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>知乎黑名单执行页</title>
+    <link rel="stylesheet" href="./runner.css" />
+  </head>
+  <body>
+    <main class="runner">
+      <header class="header">
+        <div>
+          <h1>批量屏蔽执行页</h1>
+          <p id="summary">等待任务</p>
+        </div>
+        <span id="stateBadge" class="badge idle">未开始</span>
+      </header>
+
+      <section class="panel stats">
+        <div>
+          <span>总数</span>
+          <strong id="totalCount">0</strong>
+        </div>
+        <div>
+          <span>已处理</span>
+          <strong id="processedCount">0</strong>
+        </div>
+        <div>
+          <span>成功</span>
+          <strong id="successCount">0</strong>
+        </div>
+        <div>
+          <span>失败</span>
+          <strong id="failedCount">0</strong>
+        </div>
+      </section>
+
+      <section class="actions">
+        <button id="startBtn" type="button" class="primary">开始</button>
+        <button id="pauseBtn" type="button" class="secondary">暂停</button>
+        <button id="stopBtn" type="button" class="danger">停止</button>
+        <button id="copyLogBtn" type="button" class="secondary">复制日志</button>
+      </section>
+
+      <section class="panel">
+        <div class="sectionHeader">
+          <span>当前任务</span>
+          <span id="currentToken">-</span>
+        </div>
+        <ol id="logList" class="logs"></ol>
+      </section>
+    </main>
+
+    <script src="./runner.js"></script>
+  </body>
+</html>

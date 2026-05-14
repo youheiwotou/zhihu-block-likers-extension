@@ -6,7 +6,7 @@ try {
   $manifest = Get-Content manifest.json -Raw | ConvertFrom-Json
   $dist = Join-Path $root "dist"
   $packageDir = Join-Path $dist "package"
-  $zipPath = Join-Path $dist "zhihu-block-likers-extension-$($manifest.version).zip"
+  $zipPath = Join-Path $dist "zhihu-blacklist-sync-extension-$($manifest.version).zip"
 
   New-Item -ItemType Directory -Force -Path $dist | Out-Null
   if (Test-Path $packageDir) {

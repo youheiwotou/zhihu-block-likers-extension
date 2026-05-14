@@ -26,7 +26,7 @@ foreach ($size in @(16, 32, 48, 128)) {
 
   $blue = New-Brush "#1677ff"
   $white = New-Brush "#ffffff"
-  $red = New-Brush "#f04438"
+  $green = New-Brush "#12b76a"
   $whitePen = New-Pen "#ffffff" ([Math]::Max(2, [Math]::Round($size * 0.06)))
 
   $margin = [Math]::Max(1, [Math]::Round($size * 0.06))
@@ -44,8 +44,11 @@ foreach ($size in @(16, 32, 48, 128)) {
   $badge = [Math]::Max(6, [Math]::Round($size * 0.36))
   $badgeX = $size - $badge - $margin
   $badgeY = $size - $badge - $margin
-  $graphics.FillEllipse($red, $badgeX, $badgeY, $badge, $badge)
-  $graphics.DrawLine($whitePen, $badgeX + ($badge * 0.26), $badgeY + ($badge * 0.74), $badgeX + ($badge * 0.74), $badgeY + ($badge * 0.26))
+  $graphics.FillEllipse($green, $badgeX, $badgeY, $badge, $badge)
+  foreach ($offset in @(0.34, 0.5, 0.66)) {
+    $y = $badgeY + ($badge * $offset)
+    $graphics.DrawLine($whitePen, $badgeX + ($badge * 0.27), $y, $badgeX + ($badge * 0.73), $y)
+  }
 
   $path = Join-Path $outDir "icon$size.png"
   $bitmap.Save($path, [System.Drawing.Imaging.ImageFormat]::Png)
@@ -55,7 +58,7 @@ foreach ($size in @(16, 32, 48, 128)) {
   $whitePen.Dispose()
   $blue.Dispose()
   $white.Dispose()
-  $red.Dispose()
+  $green.Dispose()
   $graphics.Dispose()
   $bitmap.Dispose()
 }

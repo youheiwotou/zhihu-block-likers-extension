@@ -2,40 +2,40 @@
 
 ## 名称
 
-知乎点赞用户屏蔽助手
+知乎黑名单同步
 
 ## 简短描述
 
-在用户确认后，从知乎回答赞同者列表中按限速逐个执行屏蔽操作。
+从 GitHub 公开仓库同步多个知乎黑名单列表，导出自己的网页版黑名单，并在确认后按列表批量屏蔽。
 
 ## 详细描述
 
-知乎点赞用户屏蔽助手用于帮助用户管理自己在知乎网页中看到的回答赞同者列表。用户打开目标回答的赞同者列表后，可以先使用试运行模式确认识别结果，再明确确认并按设定间隔逐个执行屏蔽操作。
+知乎黑名单同步用于读取用户配置的 GitHub 公开仓库。用户可以在仓库中维护一个 `index.json` 目录文件，并用不同文件保存不同黑名单列表。扩展会同步这些公开文件，在本地缓存、展示、搜索和复制列表 token。
 
-主要能力：
+用户也可以在 `https://www.zhihu.com/settings/filter` 主动点击导出。扩展会打开“用户黑名单”的编辑列表，读取当前页面中的用户主页链接，并通过右侧翻页按钮继续采集，最终复制为每行一个 token 的文本。
 
-- 识别当前知乎回答的赞同者列表
-- 默认试运行，先识别不操作
-- 用户确认后按限速逐个屏蔽
-- 支持暂停、继续和停止
-- 显示本地执行日志
-- 不上传名单、日志或设置
+用户确认后，也可以按当前同步列表批量访问知乎个人主页，点击“屏蔽用户”和确认按钮。扩展不上传本地缓存或设置，也不会向 GitHub 写入内容。
 
-隐私说明：
+## 主要功能
 
-本扩展仅在当前知乎页面本地执行，不使用远程服务器，不加载远程执行代码，不收集或上传用户数据。
+- 配置 GitHub 仓库、分支和目录文件路径
+- 同步目录文件和目录中声明的所有列表
+- 本地缓存多个列表
+- 切换、搜索和查看列表条目
+- 复制当前列表 token
+- 从当前知乎黑名单页导出自己的黑名单 token
+- 试运行后按当前列表批量屏蔽用户
+- 清空本地缓存
 
-使用建议：
+## 权限说明
 
-首次使用请先勾选试运行，确认日志中的用户来自目标回答赞同者列表。确认无误后，再取消试运行并勾选确认框执行实际屏蔽。
+- `activeTab`：用户主动导出时临时访问当前知乎标签页。
+- `scripting`：用户主动导出或执行屏蔽时临时注入页面脚本。
+- `tabs`：打开和复用批量屏蔽用的知乎工作标签页。
+- `storage`：保存仓库配置、目录缓存、列表缓存、导出结果和执行任务草稿。
+- `https://raw.githubusercontent.com/*`：读取用户配置的 GitHub 公开仓库文件。
+- `https://www.zhihu.com/*`：导出黑名单和按用户确认的列表执行屏蔽操作。
 
-## Chrome 权限说明
+## 使用提示
 
-- `activeTab`：在用户点击扩展后访问当前知乎标签页。
-- `storage`：本地保存处理上限、操作间隔和试运行开关。
-- `scripting`：在当前知乎页面注入内容脚本。
-- `https://www.zhihu.com/*`：仅用于识别知乎页面中的赞同者列表和执行用户确认的屏蔽操作。
-
-## 审核备注
-
-This extension does not collect, transmit, sell, or share user data. It runs only on `https://www.zhihu.com/*`, uses local browser storage for settings, and performs page actions only after the user opens the extension popup and explicitly starts a task. Dry-run mode is enabled by default. Real blocking requires an additional confirmation checkbox.
+公开仓库中的黑名单内容任何人都可以读取。请不要把隐私信息或敏感备注写入公开列表。

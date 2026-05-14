@@ -1,162 +1,153 @@
-# 知乎点赞用户屏蔽助手
+# 知乎黑名单同步
 
-一个 Chrome / Edge Manifest V3 扩展，用于在知乎回答的赞同者列表中，按用户确认和限速逐个执行屏蔽操作。
+一个 Chrome / Edge Manifest V3 扩展，用于从你维护的 GitHub 公开仓库同步多个知乎黑名单列表，也可以导出自己的网页版黑名单，并在用户明确确认后按当前列表批量屏蔽用户。
 
-这个项目不调用知乎未公开 API，不上传名单或日志。扩展只在当前知乎页面本地运行，默认启用试运行，实际屏蔽前需要再次勾选确认。
+扩展同步时只读取 GitHub Raw 上的公开文件，把目录和列表缓存在本地浏览器中。导出时需要用户先打开知乎网页版黑名单页，扩展会临时读取当前页面里的用户链接并翻页采集。批量屏蔽会打开一个执行页，复用一个知乎工作标签页逐个访问个人主页并点击页面里的“屏蔽用户”和确认按钮。扩展不向 GitHub 写入内容，也不会上传本地数据。
 
-## 下载
+## 仓库格式
 
-最新版下载地址：
-
-[Releases](https://github.com/youheiwotou/zhihu-block-likers-extension/releases/latest)
-
-普通用户请下载这个文件：
+建议在你的公开仓库中放一个目录文件和多个列表文件：
 
 ```text
-zhihu-block-likers-extension-user-版本号.zip
+index.json
+lists/
+  spam.txt
+  bot.txt
+  test.json
 ```
 
-不要下载源码压缩包 `Source code.zip`，它不是为普通安装准备的。
+`index.json` 示例：
 
-## 适用浏览器
+```json
+{
+  "version": 1,
+  "lists": [
+    {
+      "id": "spam",
+      "name": "广告号",
+      "path": "lists/spam.txt",
+      "description": "人工维护的广告账号"
+    },
+    {
+      "id": "bot",
+      "name": "机器人",
+      "path": "lists/bot.txt"
+    }
+  ]
+}
+```
 
-- Google Chrome
-- Microsoft Edge
-- 其他 Chromium 内核浏览器可以自行尝试
-
-当前没有上架 Chrome Web Store 或 Edge Add-ons，所以需要通过“开发者模式”加载本地扩展。
-
-## 快速安装
-
-1. 下载 `zhihu-block-likers-extension-user-版本号.zip`。
-2. 解压 zip 到任意目录。
-3. 双击解压目录里的 `install.bat`。
-4. 脚本会自动完成三件事：
-   - 把扩展复制到固定目录：`%LOCALAPPDATA%\ZhihuBlockLikersExtension`
-   - 打开 Chrome / Edge 扩展管理页
-   - 把扩展目录复制到剪贴板
-5. 在浏览器扩展管理页开启“开发者模式”。
-6. 点击“加载已解压的扩展”。
-7. 粘贴并选择脚本提示的扩展目录。
-8. 打开知乎页面后刷新一次，再点击浏览器工具栏里的扩展图标。
-
-详细安装说明见 [INSTALL.zh-CN.md](INSTALL.zh-CN.md)。
-
-## 手动安装
-
-如果不想运行脚本，也可以手动安装：
-
-1. 下载并解压 `zhihu-block-likers-extension-user-版本号.zip`。
-2. 打开 Chrome：`chrome://extensions/`，或 Edge：`edge://extensions/`。
-3. 开启“开发者模式”。
-4. 点击“加载已解压的扩展”。
-5. 选择解压后的扩展目录，目录里应该能看到 `manifest.json`。
-
-开发者也可以直接选择本仓库根目录。
-
-## 使用流程
-
-1. 登录知乎。
-2. 打开目标回答页面，建议使用这种单个回答 URL：
+纯文本列表示例：
 
 ```text
-https://www.zhihu.com/question/.../answer/...
+# 每行一个知乎 token、主页路径或主页 URL
+user-token-1
+/people/user-token-2
+https://www.zhihu.com/people/user-token-3 备注可选
 ```
 
-3. 点击浏览器工具栏里的“知乎点赞用户屏蔽助手”。
-4. 点击“打开点赞列表”，或手动打开回答的赞同者列表。
-5. 点击“检测列表”，查看日志里是否能找到赞同者列表和用户行。
-6. 首次使用保持“试运行，只识别用户不点击拉黑”勾选。
-7. 将处理上限设置成较小数字，例如 `5`。
-8. 点击“开始”，查看日志里识别的用户是否来自目标回答。
-9. 确认无误后，取消“试运行”。
-10. 勾选“我确认当前列表属于目标回答，允许执行屏蔽”。
-11. 再次点击“开始”执行实际屏蔽。
+JSON 列表也可以使用数组，或包含 `users`、`items`、`entries`、`blacklist` 数组：
 
-建议第一次真实执行时把处理上限设为 `1`，确认流程没问题后再提高。
+```json
+{
+  "users": [
+    { "token": "user-token-1", "note": "广告" },
+    "https://www.zhihu.com/people/user-token-2"
+  ]
+}
+```
 
 ## 功能
 
-- 识别知乎回答赞同者列表
-- 默认试运行，只识别不操作
-- 只读检测当前列表和首个用户行菜单
-- 实际屏蔽前必须用户确认
-- 可配置处理上限
-- 可配置最小和最大操作间隔
-- 支持暂停、继续、停止
-- 显示本地执行日志
-- 不上传用户名单、日志或设置
+- 配置 GitHub 仓库、分支和目录文件路径
+- 同步目录文件
+- 一次同步目录中声明的所有列表文件
+- 本地缓存列表内容
+- 切换不同列表查看条目
+- 搜索 token、来源行或备注
+- 复制当前列表 token
+- 从知乎网页版黑名单页导出自己的黑名单 token
+- 用户确认后按当前列表批量屏蔽个人主页
+- 试运行、处理上限和随机间隔
+- 清空本地缓存
 
-## 安全和隐私
+## 权限
 
 本扩展只申请：
 
-- `activeTab`：在用户点击扩展时访问当前标签页
-- `storage`：在本地保存处理上限、间隔和试运行开关
-- `scripting`：在知乎页面注入内容脚本
-- `https://www.zhihu.com/*`：仅在知乎页面中识别赞同者列表和执行用户确认的屏蔽操作
+- `activeTab`：在用户点击扩展并主动导出时，临时访问当前知乎标签页
+- `scripting`：把导出脚本临时注入当前知乎标签页
+- `tabs`：打开和复用批量屏蔽用的知乎工作标签页
+- `storage`：保存仓库配置、目录缓存、列表缓存、导出结果和执行任务草稿
+- `https://raw.githubusercontent.com/*`：读取你配置的 GitHub 公开仓库文件
+- `https://www.zhihu.com/*`：导出黑名单和按列表访问个人主页执行用户确认的屏蔽操作
 
 本扩展不会：
 
-- 上传知乎用户列表
-- 上传执行日志
-- 上传扩展设置
-- 使用远程服务器
-- 加载远程执行代码
-- 绕过知乎登录或权限限制
+- 自动后台静默执行屏蔽；批量屏蔽必须由用户打开执行页并确认
+- 执行关注、评论等无关网页操作
+- 上传本地缓存、日志或设置
+- 写入 GitHub 仓库
+- 加载或执行远程代码
 
-隐私政策草稿见 [docs/PRIVACY_POLICY.zh-CN.md](docs/PRIVACY_POLICY.zh-CN.md)。
+隐私政策见 [docs/PRIVACY_POLICY.zh-CN.md](docs/PRIVACY_POLICY.zh-CN.md)。
 
-## 更新
+功能可行性、页面结构依据和 QA 流程见 [docs/FEASIBILITY.zh-CN.md](docs/FEASIBILITY.zh-CN.md)。
 
-1. 下载新版 `zhihu-block-likers-extension-user-版本号.zip`。
-2. 解压后双击新版 `install.bat`。
-3. 回到 `chrome://extensions/` 或 `edge://extensions/`。
-4. 点击本扩展卡片上的“重新加载”。
-5. 已打开的知乎页面刷新一次。
+## 下载
 
-## 卸载
-
-1. 打开 `chrome://extensions/` 或 `edge://extensions/`。
-2. 找到“知乎点赞用户屏蔽助手”。
-3. 点击“移除”。
-4. 如需清理本地文件，删除目录：
+普通用户发布包文件名：
 
 ```text
-%LOCALAPPDATA%\ZhihuBlockLikersExtension
+zhihu-blacklist-sync-extension-user-版本号.zip
 ```
 
-## 常见问题
+## 安装
 
-### 为什么不能一键安装？
+1. 下载并解压发布包。
+2. 双击解压目录里的 `install.bat`。
+3. 脚本会把扩展复制到固定目录：
 
-因为扩展没有上架 Chrome Web Store 或 Edge Add-ons。浏览器安全机制不允许网页或脚本替普通用户静默安装扩展。当前能做到的最低门槛是：脚本准备目录并打开扩展页，用户手动点击“加载已解压的扩展”。
+```text
+%LOCALAPPDATA%\ZhihuBlacklistSyncExtension
+```
 
-### install.bat 被系统拦截怎么办？
+4. 在 Chrome / Edge 扩展管理页开启“开发者模式”。
+5. 点击“加载已解压的扩展”。
+6. 选择脚本复制到剪贴板的扩展目录。
 
-右键 `install.bat`，选择“属性”。如果底部有“解除锁定”，勾选后确认，再重新双击运行。
+详细说明见 [INSTALL.zh-CN.md](INSTALL.zh-CN.md)。
 
-### popup 显示“未注入”怎么办？
+## 使用
 
-刷新知乎页面，然后重新打开扩展弹窗。安装或更新扩展后，已经打开的网页通常需要刷新一次。
+1. 点击浏览器工具栏里的“知乎黑名单同步”。
+2. 在“GitHub 仓库”中填写 `owner/repo`，或填写 `https://github.com/owner/repo`。
+3. 填写分支，默认 `main`。
+4. 填写目录文件路径，默认 `index.json`。
+5. 点击“同步全部”。
+6. 在“当前列表”中切换不同文件对应的黑名单。
 
-### 点击“打开点赞列表”没有反应怎么办？
+也可以只点击“同步目录”，先确认仓库中声明了哪些列表。
 
-手动打开回答的赞同者列表，再点击扩展里的“开始”。知乎页面结构可能变化，自动查找入口可能失效。
+## 导出自己的黑名单
 
-### 日志显示“没有找到点赞列表”怎么办？
+1. 登录知乎网页版。
+2. 打开 `https://www.zhihu.com/settings/filter`。
+3. 保持该标签页为当前活动页，点击扩展图标。
+4. 点击“采集当前知乎页”。
+5. 采集完成后点击“复制导出结果”，得到每行一个 token 的文本。
 
-优先确认三件事：
+导出器不会直接调用知乎私有接口。它会在“用户黑名单”区域点击“编辑”，读取编辑列表里显示的用户主页链接，然后自动点击右侧翻页按钮；每次翻页由知乎网页自己加载下一批数据，扩展等页面更新后继续采集。
 
-- 当前页面是知乎回答页
-- 已经打开赞同者列表
-- 安装或更新扩展后刷新过知乎页面
+## 按列表批量屏蔽
 
-如果仍然失败，可能是知乎页面结构发生变化，需要调整 `src/content.js` 里的选择器和文本匹配。
+1. 先同步一个包含知乎 token 的列表。
+2. 在“当前列表”选择要执行的列表。
+3. 保持“试运行”勾选，点击“打开执行页”，先确认每个主页都能找到“屏蔽用户”按钮。
+4. 确认无误后，回到弹窗取消“试运行”，勾选确认框。
+5. 再次打开执行页，点击执行页里的“开始”。
 
-### 会不会误拉黑？
-
-有可能，所以扩展默认启用试运行。每次对新页面使用前，建议先试运行并确认日志中的用户来自目标回答。实际屏蔽前还需要额外勾选确认框。
+执行页会复用一个知乎工作标签页，逐个打开 `https://www.zhihu.com/people/{token}`，点击个人主页底部的“屏蔽用户”，再点击确认框里的“确定”。建议第一次真实执行时把处理上限设为 `1`。
 
 ## 开发
 
@@ -165,10 +156,14 @@ https://www.zhihu.com/question/.../answer/...
 ```text
 manifest.json
 src/
-  content.js
   popup.html
   popup.css
   popup.js
+  exporter.js
+  blocker.js
+  runner.html
+  runner.css
+  runner.js
 assets/
   icons/
 _locales/
@@ -181,48 +176,23 @@ docs/
 ```powershell
 .\scripts\generate-icons.ps1
 .\scripts\validate.ps1
-.\scripts\test-fixture.ps1
 .\scripts\build-package.ps1
 .\scripts\build-user-release.ps1
 ```
 
-说明：
-
-- `generate-icons.ps1`：生成扩展 PNG 图标
-- `validate.ps1`：检查 manifest、JS 语法、PowerShell 语法和图标文件
-- `test-fixture.ps1`：用本地浏览器打开离线夹具，验证识别逻辑不会把“关注”当成菜单按钮
-- `build-package.ps1`：生成商店上传用 zip
-- `build-user-release.ps1`：生成普通用户安装包 zip
-
 产物：
 
 ```text
-dist/zhihu-block-likers-extension-版本号.zip
-dist/zhihu-block-likers-extension-user-版本号.zip
+dist/zhihu-blacklist-sync-extension-版本号.zip
+dist/zhihu-blacklist-sync-extension-user-版本号.zip
 ```
 
 `dist/` 不提交到仓库。
 
-## 发布 Release
+## 免责声明
 
-生成普通用户安装包：
-
-```powershell
-.\scripts\build-user-release.ps1
-```
-
-然后把 `dist/zhihu-block-likers-extension-user-版本号.zip` 上传到 GitHub Release。用户只需要下载这个 zip。
-
-## 支持项目
-
-如果这个扩展帮你节省了时间，欢迎通过微信赞赏支持维护。详见 [docs/SPONSOR.zh-CN.md](docs/SPONSOR.zh-CN.md)。
+公开仓库中的黑名单内容任何人都可以读取。请不要在公开列表中放置隐私信息、无法公开说明来源的内容或敏感备注。使用和分发列表产生的后果由维护者和使用者自行承担。
 
 ## 开源协议
 
 本项目使用 [GNU General Public License v3.0](LICENSE) 开源。
-
-你可以自由使用、复制、修改和分发本项目；如果分发修改版或衍生版本，需要按 GPL-3.0 的要求继续提供相同许可证下的源代码。
-
-## 免责声明
-
-本项目用于个人内容管理辅助。请遵守知乎服务条款和相关法律法规，合理设置处理上限和操作间隔。使用本扩展产生的账号风险和操作后果由使用者自行承担。

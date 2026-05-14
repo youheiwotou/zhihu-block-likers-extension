@@ -1,7 +1,7 @@
 $ErrorActionPreference = "Stop"
 
 $root = Split-Path -Parent $PSScriptRoot
-$installDir = Join-Path $env:LOCALAPPDATA "ZhihuBlockLikersExtension"
+$installDir = Join-Path $env:LOCALAPPDATA "ZhihuBlacklistSyncExtension"
 $required = @("manifest.json", "src", "assets\icons", "_locales")
 
 function Assert-SourceReady {
@@ -83,7 +83,7 @@ $clipboardOk = Copy-InstallPathToClipboard
 $opened = Open-ExtensionPages
 
 Write-Host ""
-Write-Host "知乎点赞用户屏蔽助手 - 本地安装准备完成" -ForegroundColor Green
+Write-Host "知乎黑名单同步 - 本地安装准备完成" -ForegroundColor Green
 Write-Host ""
 Write-Host "扩展目录:"
 Write-Host "  $installDir" -ForegroundColor Cyan
@@ -108,5 +108,5 @@ Write-Host "最后一步:"
 Write-Host "  1. 在浏览器扩展页开启 开发者模式"
 Write-Host "  2. 点击 加载已解压的扩展"
 Write-Host "  3. 粘贴并选择上面的扩展目录"
-Write-Host "  4. 打开知乎页面后刷新一次，再点击扩展图标"
+Write-Host "  4. 点击扩展图标，填写 GitHub 仓库并同步列表"
 Write-Host ""
