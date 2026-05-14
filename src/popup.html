@@ -3,79 +3,133 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>知乎一键拉黑</title>
+    <title>知乎黑名单同步</title>
     <link rel="stylesheet" href="./popup.css" />
   </head>
   <body>
     <main class="app">
       <header class="header">
         <div>
-          <h1>知乎一键拉黑</h1>
-          <p id="pageStatus">等待检测页面</p>
+          <h1>知乎黑名单同步</h1>
+          <p id="syncStatus">配置 GitHub 仓库后同步列表</p>
         </div>
-        <span id="stateBadge" class="badge">空闲</span>
+        <span id="stateBadge" class="badge idle">未同步</span>
       </header>
 
       <section class="panel">
         <label class="field">
-          <span>处理上限</span>
-          <input id="maxUsers" type="number" min="1" max="500" step="1" value="20" />
+          <span>GitHub 仓库</span>
+          <input id="repository" type="text" spellcheck="false" placeholder="owner/repo 或 https://github.com/owner/repo" />
         </label>
 
         <div class="grid">
           <label class="field">
-            <span>最小间隔 ms</span>
-            <input id="minDelay" type="number" min="1000" max="60000" step="100" value="2500" />
+            <span>分支</span>
+            <input id="branch" type="text" spellcheck="false" value="main" />
           </label>
           <label class="field">
-            <span>最大间隔 ms</span>
-            <input id="maxDelay" type="number" min="1000" max="60000" step="100" value="5500" />
+            <span>目录文件</span>
+            <input id="indexPath" type="text" spellcheck="false" value="index.json" />
           </label>
-        </div>
-
-        <label class="check">
-          <input id="dryRun" type="checkbox" />
-          <span>试运行，只识别用户不点击拉黑</span>
-        </label>
-
-        <label class="check">
-          <input id="confirmBlock" type="checkbox" />
-          <span>我确认当前列表属于目标回答，允许执行屏蔽</span>
-        </label>
-      </section>
-
-      <section class="panel stats">
-        <div>
-          <span>发现</span>
-          <strong id="foundCount">0</strong>
-        </div>
-        <div>
-          <span>已处理</span>
-          <strong id="processedCount">0</strong>
-        </div>
-        <div>
-          <span>失败</span>
-          <strong id="failedCount">0</strong>
         </div>
       </section>
 
       <section class="actions">
-        <button id="openListBtn" type="button" class="secondary">打开点赞列表</button>
-        <button id="diagnoseBtn" type="button" class="secondary">检测列表</button>
-        <button id="startBtn" type="button" class="primary">开始</button>
-        <button id="pauseBtn" type="button" class="secondary">暂停</button>
-        <button id="stopBtn" type="button" class="danger">停止</button>
+        <button id="syncAllBtn" type="button" class="primary">同步全部</button>
+        <button id="syncIndexBtn" type="button" class="secondary">同步目录</button>
+        <button id="copyListBtn" type="button" class="secondary">复制当前列表</button>
+        <button id="clearCacheBtn" type="button" class="danger">清空缓存</button>
+      </section>
+
+      <section class="panel">
+        <div class="sectionHeader">
+          <span>导出我的黑名单</span>
+          <span id="exportCount">0</span>
+        </div>
+        <p class="hint">打开 https://www.zhihu.com/settings/filter 后从当前页采集。</p>
+        <div class="inlineActions">
+          <button id="exportBlacklistBtn" type="button" class="secondary">采集当前知乎页</button>
+          <button id="copyExportBtn" type="button" class="secondary">复制导出结果</button>
+        </div>
+        <div id="exportMeta" class="listMeta">尚未导出</div>
+      </section>
+
+      <section class="panel stats">
+        <div>
+          <span>列表</span>
+          <strong id="listCount">0</strong>
+        </div>
+        <div>
+          <span>条目</span>
+          <strong id="entryCount">0</strong>
+        </div>
+        <div>
+          <span>更新时间</span>
+          <strong id="updatedAt">-</strong>
+        </div>
+      </section>
+
+      <section class="panel">
+        <label class="field">
+          <span>当前列表</span>
+          <select id="listSelect"></select>
+        </label>
+
+        <label class="field searchField">
+          <span>搜索</span>
+          <input id="filterInput" type="search" spellcheck="false" placeholder="输入 token、来源行或备注" />
+        </label>
+
+        <div id="listMeta" class="listMeta">尚未同步列表</div>
+      </section>
+
+      <section class="panel">
+        <div class="sectionHeader">
+          <span>按当前列表批量屏蔽</span>
+          <span id="blockPlanCount">0</span>
+        </div>
+        <div class="grid">
+          <label class="field">
+            <span>处理上限</span>
+            <input id="blockMaxUsers" type="number" min="1" max="500" step="1" value="20" />
+          </label>
+          <label class="field">
+            <span>最小间隔 ms</span>
+            <input id="blockMinDelay" type="number" min="1000" max="60000" step="100" value="3000" />
+          </label>
+        </div>
+        <label class="field searchField">
+          <span>最大间隔 ms</span>
+          <input id="blockMaxDelay" type="number" min="1000" max="60000" step="100" value="7000" />
+        </label>
+        <label class="check">
+          <input id="blockDryRun" type="checkbox" />
+          <span>试运行，只打开主页并检测按钮</span>
+        </label>
+        <label class="check">
+          <input id="blockConfirm" type="checkbox" />
+          <span>我确认按当前列表逐个点击屏蔽用户</span>
+        </label>
+        <button id="openRunnerBtn" type="button" class="primary wideButton">打开执行页</button>
+      </section>
+
+      <section class="panel entryPanel">
+        <div class="sectionHeader">
+          <span>条目</span>
+          <span id="visibleCount">0</span>
+        </div>
+        <ol id="entryList" class="entries"></ol>
       </section>
 
       <section class="panel logPanel">
-        <div class="logHeader">
+        <div class="sectionHeader">
           <span>日志</span>
           <button id="copyLogBtn" type="button" class="textButton">复制</button>
         </div>
         <ol id="logList" class="logs"></ol>
       </section>
 
-      <p class="privacyNote">本扩展仅在当前知乎页面本地执行，不上传名单或日志。</p>
+      <p class="privacyNote">同步读取 GitHub 公共文件；导出仅在你主动点击后读取当前知乎页。</p>
     </main>
 
     <script src="./popup.js"></script>

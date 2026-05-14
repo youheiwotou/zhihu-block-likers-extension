@@ -4,7 +4,7 @@
 
 ## 一分钟安装
 
-1. 下载发布包 `zhihu-block-likers-extension-user-版本号.zip`。
+1. 下载发布包 `zhihu-blacklist-sync-extension-user-版本号.zip`。
 2. 解压 zip。
 3. 双击解压目录里的 `install.bat`。
 4. 浏览器打开扩展管理页后，开启“开发者模式”。
@@ -12,10 +12,10 @@
 6. 粘贴脚本复制好的目录并选择：
 
 ```text
-%LOCALAPPDATA%\ZhihuBlockLikersExtension
+%LOCALAPPDATA%\ZhihuBlacklistSyncExtension
 ```
 
-7. 打开知乎目标回答页面，刷新一次网页，再点击扩展图标。
+7. 点击浏览器工具栏里的扩展图标，填写 GitHub 仓库并同步列表。
 
 ## Chrome 手动入口
 
@@ -42,7 +42,7 @@ edge://extensions/
 1. 下载新版发布包。
 2. 解压后双击新版 `install.bat`。
 3. 回到浏览器扩展管理页，点击本扩展卡片上的“重新加载”。
-4. 已打开的知乎页面刷新一次。
+4. 重新打开扩展弹窗。
 
 ## 卸载
 
@@ -50,7 +50,7 @@ edge://extensions/
 2. 删除本地目录：
 
 ```text
-%LOCALAPPDATA%\ZhihuBlockLikersExtension
+%LOCALAPPDATA%\ZhihuBlacklistSyncExtension
 ```
 
 ## 常见问题
@@ -67,6 +67,14 @@ edge://extensions/
 
 确认选择的是脚本提示的固定目录，而不是 zip 文件，也不是 zip 解压后的上一级目录。
 
-### popup 显示“未注入”
+### 同步目录失败
 
-刷新知乎页面后重新打开扩展。安装或更新扩展后，已打开的网页需要刷新才能稳定注入内容脚本。
+优先确认三件事：
+
+- 仓库格式是 `owner/repo` 或 `https://github.com/owner/repo`
+- 分支和 `index.json` 路径正确
+- 仓库是公开仓库，文件可以通过 GitHub Raw 访问
+
+### 同步列表失败
+
+确认 `index.json` 里的 `path` 是仓库内相对路径，例如 `lists/spam.txt`。不要填写完整 URL。

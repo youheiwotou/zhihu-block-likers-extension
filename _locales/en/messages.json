@@ -1,8 +1,8 @@
 {
   "extensionName": {
-    "message": "Zhihu Liker Block Helper"
+    "message": "Zhihu Blacklist Sync"
   },
   "extensionDescription": {
-    "message": "Blocks users from a Zhihu answer liker list after explicit user confirmation and rate limiting."
+    "message": "Sync GitHub Zhihu blacklists, export your own list, and block profiles after confirmation."
   }
 }
