@@ -7,3 +7,6 @@ build/
 
 *.log
 *.zip
+
+# Local handoff notes for Codex sessions.
+LOCAL_HANDOFF.md
